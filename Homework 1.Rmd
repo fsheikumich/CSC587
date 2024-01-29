@@ -1,0 +1,209 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+
+(a) Use read.delim function to read Su_raw_matrix.txt into a variable called su (Notice that su has become a data frame now):
+
+```{r}
+# Su_raw_matrix.txt is in my working directory
+su <- read.delim("Su_raw_matrix.txt")
+
+```
+
+(b) Use mean and sd functions to find mean and standard deviation of Liver_2.CEL column:
+
+```{r}
+# "Liver_2.CEL"
+mean_value <- mean(su$Liver_2.CEL)
+sd_value <- sd(su$Liver_2.CEL)
+
+# Print the results
+cat("Mean of Liver_2.CEL:", mean_value, "\n")
+cat("Standard Deviation of Liver_2.CEL:", sd_value, "\n")
+
+```
+(c) Use colMeans and colSums functions to get the average and total values of each column:
+
+```{r}
+# su is the data frame
+average_values <- colMeans(su)
+total_values <- colSums(su)
+
+# Print the results
+cat("Average values of each column:\n")
+print(average_values)
+
+cat("\nTotal values of each column:\n")
+print(total_values)
+
+```
+## QUESTION 2
+Use rnorm(n, mean = 0, sd = 1) function in R to generate 10000 numbers for the following (mean, sigma) pairs
+and plot histogram for each, meaning you need to change the function parameter accordingly. Then comment on how
+these histograms are different from each other and state the reason. (20 points)
+(a) mean=0, sigma=0.2
+(b) mean=0, sigma=0.5
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate 10000 random numbers for each case
+data_a <- rnorm(10000, mean = 0, sd = 0.2)
+data_b <- rnorm(10000, mean = 0, sd = 0.5)
+
+# Plot histograms
+par(mfrow = c(2, 1))  # Arrange plots in 2 rows, 1 column
+
+hist(data_a, main = "Histogram for (a) mean=0, sigma=0.2", col = "lightblue", breaks = 30)
+hist(data_b, main = "Histogram for (b) mean=0, sigma=0.5", col = "lightgreen", breaks = 30)
+
+```
+
+##Question 3
+```{r}
+# (a) Create the 'dat' dataframe
+library(ggplot2)
+dat <- data.frame(cond = factor(rep(c("A", "B"), each = 200)),
+                  rating = c(rnorm(200), rnorm(200, mean = 0.8)))
+```
+
+
+```{r}
+# (b) Overlaid histograms
+ggplot(dat, aes(x = rating, fill = cond)) +
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position = "identity")
+```
+
+```{r}
+# (c) Interleaved histograms
+ggplot(dat, aes(x = rating, fill = cond)) +
+  geom_histogram(binwidth = 0.5, position = "dodge")
+```
+
+
+```{r}
+# (d) Density plots
+ggplot(dat, aes(x = rating, colour = cond)) +
+  geom_density()
+```
+
+
+```{r}
+# (e) Density plots with semitransparent fill
+ggplot(dat, aes(x = rating, fill = cond)) +
+  geom_density(alpha = 0.3)
+```
+
+
+```{r}
+# (f) Read "diabetes_train.csv" into a variable called diabetes
+diabetes <- read.csv("diabetes_train.csv")
+
+# Overlaid histograms for 'mass' attribute of diabetes
+ggplot(diabetes, aes(x = mass, fill = class)) +
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position = "identity")
+```
+
+
+```{r}
+# Interleaved histograms for 'mass' attribute of diabetes
+ggplot(diabetes, aes(x = mass, fill = class)) +
+  geom_histogram(binwidth = 0.5, position = "dodge")
+
+
+```
+
+
+```{r}
+# Density plots for 'mass' attribute of diabetes
+ggplot(diabetes, aes(x = mass, colour = class)) +
+  geom_density()
+
+```
+
+
+```{r}
+
+# Density plots with semitransparent fill for 'mass' attribute of diabetes
+ggplot(diabetes, aes(x = mass, fill = class)) +
+  geom_density(alpha = 0.3)
+```
+#A
+Explanation: This operation is performed using the %>% (pipe) operator from the dplyr package.
+drop_na(): Removes rows with missing values (NA) from the dataset.
+summary(): Provides a summary of the dataset, including statistical measures for each column.
+```{r}
+# Load the necessary packages
+library(tidyverse)
+
+# Read the titanic.csv file from DATA folder to a variable named passengers
+passengers <- read.csv("titanic.csv")
+
+# (a) Remove rows with missing values and provide a summary of the dataset
+summary_data <- passengers %>% drop_na() %>% summary()
+print(summary_data)
+
+```
+##B
+Explanation: This operation filters the dataset to include only rows where the 'Sex' column is equal to "male".
+filter(Sex == "male"): Retains only those rows where the 'Sex' column is "male".
+
+```{r}
+
+# (b) Filter the data to include only male passengers
+male_passengers <- passengers %>% filter(Sex == "male")
+print(male_passengers)
+```
+#C
+Explanation: This operation arranges the dataset in descending order based on the 'Fare' column.
+arrange(desc(Fare)): Sorts the dataset in descending order of 'Fare'.
+
+```{r}
+# (c) Arrange the data in descending order based on Fare
+sorted_passengers <- passengers %>% arrange(desc(Fare))
+print(sorted_passengers)
+
+```
+#D
+Explanation: This operation adds a new column 'FamSize' to the dataset, representing the sum of 'Parch' (number of parents/children aboard) and 'SibSp' (number of siblings/spouses aboard).
+mutate(FamSize = Parch + SibSp): Creates a new column 'FamSize' with the sum of 'Parch' and 'SibSp'. This can help in analyzing the family size of each passenger.
+
+```{r}
+# (d) Create a new column 'FamSize' that is the sum of 'Parch' and 'SibSp'
+passengers_with_famsize <- passengers %>% mutate(FamSize = Parch + SibSp)
+print(passengers_with_famsize)
+```
+
+#E
+Explanation: This operation groups the dataset by the 'Sex' column and calculates summary statistics within each group.
+group_by(Sex): Groups the data by the 'Sex' column, allowing for separate calculations for male and female passengers.
+summarise(meanFare = mean(Fare), numSurv = sum(Survived)): Calculates the mean 'Fare' and total number of 'Survived' passengers for each gender group. This can provide insights into average fare expenses and survival rates based on gender.
+```{r}
+# (e) 
+grouped_passengers <- passengers %>% group_by(Sex) %>% summarise(meanFare = mean(Fare), numSurv = sum(Survived))
+print(grouped_passengers)
+```
+
+#Question 6
+```{r}
+percentiles <- quantile(diabetes$skin, c(0.1, 0.3, 0.5, 0.6))
+
+# Print the results
+cat("10th percentile:", percentiles[1], "\n")
+cat("30th percentile:", percentiles[2], "\n")
+cat("50th percentile (median):", percentiles[3], "\n")
+cat("60th percentile:", percentiles[4], "\n")
+```
+
+
+```{r}
+```
+
